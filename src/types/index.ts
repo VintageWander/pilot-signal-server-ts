@@ -5,6 +5,7 @@ export interface GROUPS_TYPE {
   [groupId: string]: {
     desc: WebSocketEventDataDesc;
     peerIds: string[];
+    host: string;
   };
 }
 
