@@ -1,8 +1,8 @@
-import { sendMessage } from ".";
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { CONNS, PEERS } from "../server";
 import { groupServices } from "../services";
 import { WebSocketEventData } from "../types";
+import { sendMessage } from ".";
 
 export const handleOffer = (data: WebSocketEventData): void => {
   const { groupId, senderId, receiverId, offer } = data;
