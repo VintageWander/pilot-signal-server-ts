@@ -1,7 +1,8 @@
 import { WebSocketServer } from "ws";
-import { ipService, verifier } from "./services";
+import { groupServices, ipService, verifier } from "./services";
 import { CONNS_TYPE, GROUPS_TYPE, PEERS_TYPE, WebSocketEvent } from "./types";
 import { SIGNALING_MESSAGE_TYPES } from "./constants";
+import { handleMessage, sendMessage } from "./handler";
 
 export const GROUPS: GROUPS_TYPE = {};
 export const PEERS: PEERS_TYPE = {};
@@ -28,9 +29,9 @@ wss.on("connection", (ws, req) => {
 
   const ip = ipService.ip4v2(ipAddress);
 
-  let groupId: unknown;
-  let peerId: unknown;
-  let connId: unknown;
+  let groupId: string;
+  let peerId: string;
+  let connId: string;
 
   ws.on("message", async (event: string) => {
     console.log("--------------------------------------------");
@@ -38,5 +39,32 @@ wss.on("connection", (ws, req) => {
     const allowedReq = await verifier.verifyToken(type, data.groupToken);
     console.log("Data :", allowedReq, type, data);
     if (!allowedReq) return;
+
+    handleMessage(ws, type, data, ip, peerId, connId);
+  });
+
+  const close = () => {
+    if (!PEERS[peerId]) return;
+    const peer = PEERS[peerId];
+    if (!peer) return;
+    const { connId } = peer;
+    delete CONNS[connId];
+    delete PEERS[peerId];
+
+    const { peers = [], host } = groupServices.removePeer(groupId, peerId);
+    const updatedPeerIds = [...peers];
+    updatedPeerIds.forEach((peerId) => {
+      const peer = PEERS[peerId];
+      if (peer) {
+        sendMessage(CONNS[peer.connId], SIGNALING_MESSAGE_TYPES.LEAVE_GROUP, {
+          peerId,
+          host,
+        });
+      }
+    });
+  };
+
+  ws.on("close", () => {
+    close();
   });
 });
