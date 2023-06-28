@@ -1,11 +1,11 @@
 import { WebSocket } from "ws";
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
-import { WebSocketEvent, WebSocketEventData } from "../types";
+import { WebSocketEvent } from "../types";
 
 export const sendMessage = (
   client: WebSocket | undefined,
   type: SIGNALING_MESSAGE_TYPES,
-  data: WebSocketEventData
+  data: object
 ): void => {
   console.log("Send message: ", !!client, type, data);
   if (!client) return;
