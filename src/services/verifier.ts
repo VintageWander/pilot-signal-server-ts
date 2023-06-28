@@ -13,12 +13,16 @@ const verifyToken = async (
   groupToken: string | undefined
 ): Promise<boolean> => {
   if (groupToken === undefined) return true;
+  const autoPass =
+    msgType === SIGNALING_MESSAGE_TYPES.ONLINE ||
+    msgType === SIGNALING_MESSAGE_TYPES.JOIN_GROUP; // extend...
+  if (autoPass) return true;
 
   try {
     const data = (await verify(groupToken, JWT_SECRET_KEY)) as Token;
     const { groupId } = data;
     const group = groupServices.getGroupById(groupId);
-    return true;
+    return !!group;
   } catch {
     return false;
   }
