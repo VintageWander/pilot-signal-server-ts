@@ -1,9 +1,13 @@
 import { WebSocket } from "ws";
-import { handleOnline } from ".";
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { WebSocketEventData } from "../types";
-import { handleOffer } from "./offer";
-import { handleAnswer } from "./answer";
+import {
+  handleAnswer,
+  handleCandidate,
+  handleLeaveGroup,
+  handleOffer,
+  handleOnline,
+} from ".";
 
 export const handleMessage = (
   ws: WebSocket,
@@ -20,6 +24,10 @@ export const handleMessage = (
       return handleOffer(data);
     case SIGNALING_MESSAGE_TYPES.ANSWER:
       return handleAnswer(data);
+    case SIGNALING_MESSAGE_TYPES.CANDIDATE:
+      return handleCandidate(data);
+    case SIGNALING_MESSAGE_TYPES.LEAVE_GROUP:
+      return handleLeaveGroup(data);
     default:
       console.error(`Event type '${type}' is not supported`);
   }
