@@ -1,9 +1,10 @@
-import { WebSocket } from "ws";
-import { WebSocketEventData } from "../types";
 import { v4 as uuidv4 } from "uuid";
-import { CONNS, PEERS } from "../server";
-import { sendMessage } from ".";
+import { WebSocket } from "ws";
+
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
+import { CONNS, PEERS } from "../server";
+import { WebSocketEventData } from "../types";
+import { sendMessage } from "./message";
 
 export const handleOnline = (
   ws: WebSocket,
