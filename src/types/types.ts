@@ -26,7 +26,7 @@ export interface CONNS_TYPE {
   [connId: string]: WebSocket | undefined;
 }
 
-export interface Token {
+export interface Payload {
   groupId: string;
 }
 
