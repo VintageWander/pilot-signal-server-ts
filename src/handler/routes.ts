@@ -1,22 +1,22 @@
 import { WebSocket } from "ws";
+
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { WebSocketEventData } from "../types";
-import {
-  handleAnswer,
-  handleCandidate,
-  handleLeaveGroup,
-  handleOffer,
-  handleOnline,
-} from ".";
+import { handleAnswer } from "./answer";
+import { handleCandidate } from "./candidate";
+import { hanldeJoinGroup as handleJoinGroup } from "./join";
+import { handleLeaveGroup } from "./leave";
+import { handleOffer } from "./offer";
+import { handleOnline } from "./online";
 
-export const handleMessage = (
+export const handleMessage = async (
   ws: WebSocket,
   type: SIGNALING_MESSAGE_TYPES,
   data: WebSocketEventData,
   ip: string,
   peerId: string,
   connId: string
-): void => {
+): Promise<void> => {
   switch (type) {
     case SIGNALING_MESSAGE_TYPES.ONLINE:
       return handleOnline(ws, data, ip, peerId, connId);
@@ -26,6 +26,8 @@ export const handleMessage = (
       return handleAnswer(data);
     case SIGNALING_MESSAGE_TYPES.CANDIDATE:
       return handleCandidate(data);
+    case SIGNALING_MESSAGE_TYPES.JOIN_GROUP:
+      return await handleJoinGroup(ws, data, ip, peerId, connId);
     case SIGNALING_MESSAGE_TYPES.LEAVE_GROUP:
       return handleLeaveGroup(data);
     default:
