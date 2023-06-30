@@ -1,26 +1,29 @@
+import dotenv from "dotenv";
 import { WebSocketServer } from "ws";
+
+import { PORT } from "./config";
+import { SIGNALING_MESSAGE_TYPES } from "./constants";
+import { handleMessage } from "./handler";
+import { sendMessage } from "./handler/message";
 import { groupServices, ipService, verifier } from "./services";
 import { CONNS_TYPE, GROUPS_TYPE, PEERS_TYPE, WebSocketEvent } from "./types";
-import { SIGNALING_MESSAGE_TYPES } from "./constants";
-import { handleMessage, sendMessage } from "./handler";
+
+dotenv.config();
 
 export const GROUPS: GROUPS_TYPE = {};
 export const PEERS: PEERS_TYPE = {};
 export const CONNS: CONNS_TYPE = {};
 
 const wss = new WebSocketServer({
-  port: 9090,
+  port: PORT,
 });
 
 wss.on("connection", (ws, req) => {
-  let ipAddress = req.headers["x-forwarded-for"];
-  if (ipAddress === undefined) {
-    ipAddress = req.socket.remoteAddress;
-    if (ipAddress === undefined) {
-      throw new Error(
-        "Cannot read ip address from x-forwarded-for header or req.socket.remoteAddress"
-      );
-    }
+  let ipAddress = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  if (!ipAddress) {
+    throw new Error(
+      "Cannot read ip address from x-forwarded-for header or req.socket.remoteAddress"
+    );
   } else if (Array.isArray(ipAddress) && typeof ipAddress[0] === "string") {
     ipAddress = ipAddress[0];
   } else if (typeof ipAddress !== "string") {
@@ -40,7 +43,7 @@ wss.on("connection", (ws, req) => {
     console.log("Data :", allowedReq, type, data);
     if (!allowedReq) return;
 
-    handleMessage(ws, type, data, ip, peerId, connId);
+    await handleMessage(ws, type, data, ip, peerId, connId);
   });
 
   const close = () => {
