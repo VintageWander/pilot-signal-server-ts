@@ -4,7 +4,7 @@ import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { WebSocketEventData } from "../types";
 import { handleAnswer } from "./answer";
 import { handleCandidate } from "./candidate";
-import { hanldeJoinGroup as handleJoinGroup } from "./join";
+import { handleJoinGroup } from "./join";
 import { handleLeaveGroup } from "./leave";
 import { handleOffer } from "./offer";
 import { handleOnline } from "./online";

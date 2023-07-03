@@ -7,7 +7,7 @@ import { groupServices, ipService, verifier } from "../services";
 import { WebSocketEventData } from "../types";
 import { sendMessage } from "./message";
 
-export const hanldeJoinGroup = async (
+export const handleJoinGroup = async (
   ws: WebSocket,
   data: WebSocketEventData,
   ip: string,
