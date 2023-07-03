@@ -4,15 +4,14 @@ import { WebSocket } from "ws";
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { CONNS, PEERS } from "../server";
 import { groupServices, ipService, verifier } from "../services";
-import { WebSocketEventData } from "../types";
+import { GlobalIds, WebSocketEventData } from "../types";
 import { sendMessage } from "./message";
 
 export const handleJoinGroup = async (
   ws: WebSocket,
   data: WebSocketEventData,
   ip: string,
-  peerId: string,
-  groupId: string | undefined
+  globalIds: GlobalIds
 ) => {
   const { senderId, desc } = data;
   if (!senderId || !desc) return;
@@ -22,34 +21,34 @@ export const handleJoinGroup = async (
     },
   } = await ipService.getLocation(ip);
 
-  groupId = groupServices.evaluate({ ...desc, isp });
+  globalIds.groupId = groupServices.evaluate({ ...desc, isp });
 
   let neighborIds: string[] = [];
   let groupToken = "";
 
-  if (groupId) {
-    const group = groupServices.getGroupById(groupId);
+  if (globalIds.groupId) {
+    const group = groupServices.getGroupById(globalIds.groupId);
     if (!group) return;
     if (!group.peerIds) return;
     neighborIds = [...group.peerIds];
     if (!group.groupToken) return;
     groupToken = group.groupToken;
-    groupServices.addPeer(groupId, senderId, desc);
+    groupServices.addPeer(globalIds.groupId, senderId, desc);
   } else {
-    groupId = uuidv4();
-    groupToken = verifier.generateGroupToken({ groupId });
-    groupServices.newGroup(groupId, groupToken, {
-      peerId,
+    globalIds.groupId = uuidv4();
+    groupToken = verifier.generateGroupToken({ groupId: globalIds.groupId });
+    groupServices.newGroup(globalIds.groupId, groupToken, {
+      peerId: globalIds.peerId,
       desc: { ...desc, isp },
     });
   }
 
-  const group = groupServices.getGroupById(groupId);
+  const group = groupServices.getGroupById(globalIds.groupId);
   if (!group) return;
   if (!group.host) return;
 
   sendMessage(ws, SIGNALING_MESSAGE_TYPES.JOIN_GROUP, {
-    groupId,
+    groupId: globalIds.groupId,
     neighborIds,
     groupToken,
     host: group.host,
@@ -61,7 +60,7 @@ export const handleJoinGroup = async (
     if (!peer) return;
     const { connId } = peer;
     sendMessage(CONNS[connId], SIGNALING_MESSAGE_TYPES.NEW_PEER, {
-      groupId,
+      groupId: globalIds.groupId,
       peerId: senderId,
     });
   });

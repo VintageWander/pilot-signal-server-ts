@@ -3,22 +3,21 @@ import { WebSocket } from "ws";
 
 import { SIGNALING_MESSAGE_TYPES } from "../constants";
 import { CONNS, PEERS } from "../server";
-import { WebSocketEventData } from "../types";
+import { GlobalIds, WebSocketEventData } from "../types";
 import { sendMessage } from "./message";
 
 export const handleOnline = (
   ws: WebSocket,
   data: WebSocketEventData,
   ip: string,
-  peerId: string,
-  connId: string
+  globalIds: GlobalIds
 ): void => {
   const { desc } = data;
   if (!desc) return;
-  peerId = uuidv4();
-  connId = uuidv4();
+  globalIds.peerId = uuidv4();
+  globalIds.connId = uuidv4();
   CONNS.connId = ws;
-  PEERS.peerId = { connId, desc, ip };
+  PEERS.peerId = { connId: globalIds.connId, desc, ip };
 
-  sendMessage(ws, SIGNALING_MESSAGE_TYPES.ONLINE, { peerId });
+  sendMessage(ws, SIGNALING_MESSAGE_TYPES.ONLINE, { peerId: globalIds.peerId });
 };
