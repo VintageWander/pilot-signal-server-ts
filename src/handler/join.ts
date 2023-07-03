@@ -17,9 +17,7 @@ export const handleJoinGroup = async (
   const { senderId, desc } = data;
   if (!senderId || !desc) return;
   const {
-    data: {
-      data: { ISP: isp },
-    },
+    data: { ISP: isp },
   } = await ipService.getLocation(ip);
 
   groupId = groupServices.evaluate({ ...desc, isp });

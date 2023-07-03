@@ -19,9 +19,7 @@ const getLocation = async (ip: string): Promise<LocationResponse> => {
   if (err) {
     return {
       data: {
-        data: {
-          ISP: "unknown",
-        },
+        ISP: "unknown",
       },
     };
   }

@@ -56,8 +56,6 @@ export interface WebSocketEventDataDesc {
 
 export interface LocationResponse {
   data: {
-    data: {
-      ISP: string;
-    };
+    ISP: string;
   };
 }
