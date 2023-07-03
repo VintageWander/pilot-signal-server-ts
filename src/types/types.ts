@@ -26,6 +26,12 @@ export interface CONNS_TYPE {
   [connId: string]: WebSocket | undefined;
 }
 
+export interface GlobalIds {
+  groupId: string;
+  peerId: string;
+  connId: string;
+}
+
 export interface Payload {
   groupId: string;
 }
