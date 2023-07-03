@@ -17,7 +17,9 @@ export const handleJoinGroup = async (
   const { senderId, desc } = data;
   if (!senderId || !desc) return;
   const {
-    data: { ISP: isp },
+    data: {
+      data: { ISP: isp },
+    },
   } = await ipService.getLocation(ip);
 
   groupId = groupServices.evaluate({ ...desc, isp });
@@ -44,6 +46,7 @@ export const handleJoinGroup = async (
 
   const group = groupServices.getGroupById(groupId);
   if (!group) return;
+  if (!group.host) return;
 
   sendMessage(ws, SIGNALING_MESSAGE_TYPES.JOIN_GROUP, {
     groupId,

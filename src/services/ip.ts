@@ -1,4 +1,3 @@
-import to from "await-to-js";
 import axios from "axios";
 
 import { IPLOCATION_URL } from "../config";
@@ -12,18 +11,17 @@ const ip4v2 = (ipAddress: string): string => {
   return comps[1] || comps[0];
 };
 
-const getLocation = async (ip: string): Promise<LocationResponse> => {
-  const [err, result] = await to(
-    axios.get<LocationResponse>(`${IPLOCATION_URL}/query?ip=${ip}`)
-  );
-  if (err) {
-    return {
-      data: {
-        ISP: "unknown",
-      },
-    };
-  }
-  return result.data;
+const getLocation = async (ip: string) => {
+  return axios
+    .get<LocationResponse>(`${IPLOCATION_URL}/query?ip=${ip}`)
+    .catch((err) => {
+      console.log("Get Location error: ", ip, err);
+      return {
+        data: {
+          data: { ISP: "unknown" },
+        },
+      };
+    });
 };
 
 export const ipService = {
