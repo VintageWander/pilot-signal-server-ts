@@ -88,7 +88,7 @@ const calcScore = (
   return score;
 };
 
-const evaluate = (condition: WebSocketEventDataDesc): string | undefined => {
+const evaluate = (condition: WebSocketEventDataDesc): string => {
   let maxScore = 0;
   let bestGroupId = "";
 
@@ -100,7 +100,7 @@ const evaluate = (condition: WebSocketEventDataDesc): string | undefined => {
       bestGroupId = groupId;
     }
   });
-  return maxScore ? bestGroupId : undefined;
+  return maxScore ? bestGroupId : "";
 };
 
 const newGroup = (
