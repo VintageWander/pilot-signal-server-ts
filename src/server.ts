@@ -48,14 +48,14 @@ wss.on("connection", (ws, req) => {
     connId: "",
   };
 
-  ws.on("message", async (event: string) => {
+  ws.on("message", async (event: string): Promise<void> => {
     console.log("--------------------------------------------");
     const { type, data } = JSON.parse(event) as WebSocketEvent;
     const allowedReq = await verifier.verifyToken(type, data.groupToken);
     console.log("Data :", allowedReq, type, data);
     if (!allowedReq) return;
 
-    handleMessage(ws, type, data, ip, globalIds);
+    await handleMessage(ws, type, data, ip, globalIds);
     console.log("GROUPS: ", GROUPS);
     console.log("PEERS: ", PEERS);
   });
