@@ -16,8 +16,8 @@ export const handleOnline = (
   if (!desc) return;
   globalIds.peerId = uuidv4();
   globalIds.connId = uuidv4();
-  CONNS.connId = ws;
-  PEERS.peerId = { connId: globalIds.connId, desc, ip };
+  CONNS[globalIds.connId] = ws;
+  PEERS[globalIds.peerId] = { connId: globalIds.connId, desc, ip };
 
   sendMessage(ws, SIGNALING_MESSAGE_TYPES.ONLINE, { peerId: globalIds.peerId });
 };
