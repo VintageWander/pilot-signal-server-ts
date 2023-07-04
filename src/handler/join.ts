@@ -12,7 +12,7 @@ export const handleJoinGroup = async (
   data: WebSocketEventData,
   ip: string,
   globalIds: GlobalIds
-) => {
+): Promise<void> => {
   const { senderId, desc } = data;
   if (!senderId || !desc) return;
   const {
